@@ -1,0 +1,62 @@
+import { Request, Response, NextFunction } from "express";
+import { IAuthController } from "../interfaces/controllers/auth.controller.interface";
+import { OtpRepository } from "../repositories/otp.repository";
+import { UserRepository } from "../repositories/user.repository";
+import { AuthService } from "../services/auth.service";
+import { EmailService } from "../services/email.service";
+import { HttpStatus } from "../types/http-status.enum";
+
+export class AuthController implements IAuthController{
+  private authService: AuthService
+  constructor(){
+    this.authService =  new AuthService(new UserRepository(),new OtpRepository(),new EmailService())
+  }
+
+  async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {fullName,email,password} = req.body
+      await this.authService.register(fullName,email,password)
+      res.status(HttpStatus.CREATED).json({success:true,message:"Otp Sent Succesfully"})
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {email,otp} = req.body
+      await this.authService.verifyOtp(email,otp)
+      res.status(HttpStatus.OK).json({success:true,message:"Otp verified"})
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {email,password} = req.body
+      const tokens = await this.authService.login(email,password)
+      res.status(HttpStatus.OK).json({success:true,data:tokens})
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {refreshToken} = req.body
+      const accessToken = await this.authService.resfreshToken(refreshToken)
+      res.status(HttpStatus.OK).json({success:true,data:{accessToken}})
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      res.status(HttpStatus.OK).json({ success: true, message: 'Logged out' });
+    } catch (error) {
+      next(error)
+    }
+  }
+}
