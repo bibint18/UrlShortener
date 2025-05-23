@@ -3,7 +3,7 @@ import { Iuser } from "../interfaces/models/user.interface";
 import dotenv from 'dotenv'
 dotenv.config()
 export const generateAccessToken = (user:Iuser):string => {
-  return jwt.sign({id:user.id},process.env.JWT_ACCESS_SECRET!,{expiresIn:"15m"})
+  return jwt.sign({id:user.id},process.env.JWT_ACCESS_SECRET!,{expiresIn:"2m"})
 }
 
 export const generateRefreshToken = (user:Iuser):string => {

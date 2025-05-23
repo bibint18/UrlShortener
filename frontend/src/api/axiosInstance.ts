@@ -32,13 +32,14 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       const state = store.getState();
       const refreshToken = state.auth.refreshToken;
-
+      console.log("refreshToken from axiosInstace",refreshToken)
       if (refreshToken) {
         try {
-          const response = await axios.post<RefreshResponse>(
-            `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          const response = await axiosInstance.post<RefreshResponse>(
+            `/api/auth/refresh`,
             { refreshToken } as RefreshRequest,
           );
+          console.log("response after refresh",response.data)
           const { accessToken } = response.data.data;
           if(state.auth.user && state.auth.refreshToken){
             store.dispatch(

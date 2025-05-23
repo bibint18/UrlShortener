@@ -25,8 +25,8 @@ export class AuthController implements IAuthController{
 
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {email,otp} = req.body
-      await this.authService.verifyOtp(email,otp)
+      const {email,otp,fullName,password} = req.body
+      await this.authService.verifyOtp(fullName,email,password,otp)
       res.status(HttpStatus.OK).json({success:true,message:"Otp verified"})
     } catch (error) {
       next(error)
@@ -45,7 +45,9 @@ export class AuthController implements IAuthController{
 
   async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      console.log("reached here auth refresh")
       const {refreshToken} = req.body
+      console.log("refrsg token",req.body)
       const accessToken = await this.authService.resfreshToken(refreshToken)
       res.status(HttpStatus.OK).json({success:true,data:{accessToken}})
     } catch (error) {

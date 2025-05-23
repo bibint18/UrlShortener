@@ -8,10 +8,15 @@ export class UserRepository implements IuserRepository{
   }
 
   async findUserByEmail(email: string): Promise<Iuser | null> {
+    console.log("reached find by email")
     return await userModel.findOne({email:email})
   }
 
   async updateUser(id: string, update: Partial<Iuser>): Promise<Iuser | null> {
     return await userModel.findByIdAndUpdate(id,update,{new:true})
+  }
+
+  async findUserById(userId:string):Promise<Iuser |null>{
+    return await userModel.findById(userId)
   }
 }

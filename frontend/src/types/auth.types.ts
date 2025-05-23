@@ -23,7 +23,9 @@ export interface RegisterResponse {
 }
 
 export interface VerifyOtpRequest {
+  fullName:string
   email: string;
+  password:string
   otp: string;
 }
 

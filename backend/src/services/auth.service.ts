@@ -21,14 +21,15 @@ export class AuthService implements IAuthService{
     if(existingUser){
       throw new ApiError(HttpStatus.BAD_REQUEST,"Email Already Exist")
     }
-    const hashedPassword = await bcrypt.hash(password,10)
-    const user = await this.userRepository.createUser({
-      fullName,
-      email,
-      hashedPassword,
-      isVerified:false
-    })
-    console.log(user)
+    console.log(password)
+    // const hashedPassword = await bcrypt.hash(password,10)
+    // const user = await this.userRepository.createUser({
+    //   fullName,
+    //   email,
+    //   hashedPassword,
+    //   isVerified:false
+    // })
+    // console.log(user)
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
     await this.otpRepository.createOtp({
       email,
@@ -40,15 +41,24 @@ export class AuthService implements IAuthService{
     console.log("otpsend",otpsend)
   }
 
-  async verifyOtp(email: string, otp: string): Promise<void> {
+  async verifyOtp(fullName:string,email:string,password:string,otp:string): Promise<void> {
+    console.log('verifyotp backend',fullName,email,password,otp)
     const otpRecord = await this.otpRepository.findOtpByEmail(email)
+    console.log('otprecord',otpRecord)
     if(!otpRecord || otpRecord.otp !== otp || otpRecord.expiresAt < new Date()){
       throw new ApiError(HttpStatus.BAD_REQUEST,"Invalid or Expired Otp")
     }
-    const user = await this.userRepository.findUserByEmail(email)
-    if(!user){
-      throw new ApiError(HttpStatus.NOT_FOUND,"No user exist")
-    }
+    // const user = await this.userRepository.findUserByEmail(email)
+    // if(!user){
+    //   throw new ApiError(HttpStatus.NOT_FOUND,"No user exist")
+    // }
+    const hashedPassword = await bcrypt.hash(password,10)
+    const user = await this.userRepository.createUser({
+      fullName,
+      email,
+      hashedPassword,
+      isVerified:false
+    })
     await this.userRepository.updateUser(user.id,{isVerified:true})
     await this.otpRepository.deleteOtpByEmail(email)
   }
@@ -74,7 +84,9 @@ export class AuthService implements IAuthService{
     try{
     const payload = verifyRefreshToken(reffreshToken) as {id:string}
     console.log('payload from refresh service',payload)
-    const user = await this.userRepository.findUserByEmail(payload.id)
+    // const user = await this.userRepository.findUserByEmail(payload.id)
+    const user = await this.userRepository.findUserById(payload.id)
+    console.log("user from refresh",user)
     if(!user || user.refreshToken !== reffreshToken){
       throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid Refresh Token")
     }

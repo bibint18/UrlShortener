@@ -10,6 +10,7 @@ declare module 'express-serve-static-core' {
 }
 export const authMiddleware = async (req:Request,res:Response,next:NextFunction):Promise<void> => {
   const token = req.headers.authorization?.split(' ')[1]
+  console.log("tpken from middleware",token)
   if(!token){
     throw new ApiError(HttpStatus.UNAUTHORIZED,"No Token Provided")
   }try {
