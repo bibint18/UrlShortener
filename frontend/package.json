@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "jest",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "preview": "vite preview"
   },
@@ -21,6 +20,7 @@
     "postcss": "^8.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.0",
     "redux-persist": "^6.0.0",
     "tailwindcss": "^4.1.7"

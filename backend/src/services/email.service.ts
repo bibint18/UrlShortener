@@ -17,5 +17,6 @@ export class EmailService implements IEmailService{
       subject:"URL Shortener verification",
       text:`Your OTP is ${otp}. It expires in 10 minutes.`
   })
+  console.log("email sent")
   }
 }

@@ -18,6 +18,7 @@ export class AuthController implements IAuthController{
       await this.authService.register(fullName,email,password)
       res.status(HttpStatus.CREATED).json({success:true,message:"Otp Sent Succesfully"})
     } catch (error) {
+      console.log(error)
       next(error)
     }
   }

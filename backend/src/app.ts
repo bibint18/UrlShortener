@@ -3,12 +3,12 @@ import helmet from "helmet";
 import cors from 'cors'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
-import { connectDB } from "./config/database";
-import authRoute from '../src/routes/auth.routes'
-import urlRoute from '../src/routes/url.routes'
-import { UrlController } from "./controllers/url.controller";
-import { ApiError } from "./utils/error.utils";
-import { HttpStatus } from "./types/http-status.enum";
+import { connectDB } from "./config/database.js";
+import authRoute from '../src/routes/auth.routes.js'
+import urlRoute from '../src/routes/url.routes.js'
+import { UrlController } from "./controllers/url.controller.js";
+import { ApiError } from "./utils/error.utils.js";
+import { HttpStatus } from "./types/http-status.enum.js";
 dotenv.config()
 const app = express()
 app.use(helmet())

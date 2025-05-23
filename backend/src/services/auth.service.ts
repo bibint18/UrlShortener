@@ -6,6 +6,7 @@ import { IAuthService } from "../interfaces/services/auth.service.interface";
 import { ApiError } from "../utils/error.utils";
 import { HttpStatus } from "../types/http-status.enum";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.utils';
+import { Iuser } from '../interfaces/models/user.interface';
 
 
 export class AuthService implements IAuthService{
@@ -34,7 +35,9 @@ export class AuthService implements IAuthService{
       otp,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     })
-    await this.emailService.sendOtpEmail(email,otp)
+    console.log("otp",otp)
+    const otpsend =await this.emailService.sendOtpEmail(email,otp)
+    console.log("otpsend",otpsend)
   }
 
   async verifyOtp(email: string, otp: string): Promise<void> {
@@ -50,7 +53,7 @@ export class AuthService implements IAuthService{
     await this.otpRepository.deleteOtpByEmail(email)
   }
 
-  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; }> {
+  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user:Iuser | null }> {
     const user = await this.userRepository.findUserByEmail(email)
     if(!user || !user.isVerified){
       throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid credentials or Unverified account")
@@ -61,8 +64,10 @@ export class AuthService implements IAuthService{
     }
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
+    const userData = await this.userRepository.findUserByEmail(email)
+    console.log("acc refr tokens from service",accessToken,refreshToken)
     await this.userRepository.updateUser(user.id,{refreshToken:refreshToken})
-    return {accessToken,refreshToken}
+    return {accessToken,refreshToken,user:userData}
   }
 
   async resfreshToken(reffreshToken: string): Promise<string> {

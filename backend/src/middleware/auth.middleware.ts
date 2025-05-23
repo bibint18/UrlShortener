@@ -2,7 +2,12 @@ import { Request,Response,NextFunction } from "express";
 import { ApiError } from "../utils/error.utils";
 import { HttpStatus } from "../types/http-status.enum";
 import { verifyAccessToken } from "../utils/jwt.utils";
-
+import { JwtPayload } from "jsonwebtoken";
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: JwtPayload & { id: string };
+  }
+}
 export const authMiddleware = async (req:Request,res:Response,next:NextFunction):Promise<void> => {
   const token = req.headers.authorization?.split(' ')[1]
   if(!token){

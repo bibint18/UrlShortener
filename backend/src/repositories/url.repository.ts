@@ -12,11 +12,11 @@ export class UrlRepository implements IUrlRepository{
     return await urlModel.findOne({shortId:shortId})
   }
 
-  async findUrlsByUserId(userId: Types.ObjectId): Promise<Iurl | null> {
-    return await urlModel.findOne({userId})
+  async findUrlsByUserId(userId: Types.ObjectId): Promise<Iurl[] | null> {
+    return await urlModel.find({userId})
   }
 
-  async incrementClicks(shortId: number): Promise<Iurl | null> {
+  async incrementClicks(shortId: string): Promise<Iurl | null> {
     return urlModel.findOneAndUpdate({shortId},{$inc:{clicks:1}},{new:true})
   }
 }

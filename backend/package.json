@@ -1,12 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/app.ts",
+  "type": "module",
   "scripts": {
     "start": "node dist/app.js",
     "build": "tsc",
-    "dev": "ts-node src/app.ts",
-    "test": "jest",
+    "dev": "tsx src/app.ts",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write src/**/*.{ts,tsx}"
   },
@@ -51,6 +51,7 @@
     "supertest": "^7.1.1",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
   }

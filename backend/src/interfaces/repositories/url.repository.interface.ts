@@ -4,6 +4,6 @@ import { Iurl } from "../models/url.interface";
 export interface IUrlRepository{
   createUrl(url:Partial<Iurl>):Promise<Iurl>
   findUrlByShortId(shortId:string):Promise<Iurl | null>
-  findUrlsByUserId(userId:Types.ObjectId):Promise<Iurl | null>
-  incrementClicks(shortId:number):Promise<Iurl| null>
+  findUrlsByUserId(userId:Types.ObjectId):Promise<Iurl[] | null>
+  incrementClicks(shortId:string):Promise<Iurl| null>
 }
