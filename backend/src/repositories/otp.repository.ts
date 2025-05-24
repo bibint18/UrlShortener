@@ -14,4 +14,11 @@ export class OtpRepository implements IOtpRepository{
   async deleteOtpByEmail(email: string): Promise<void> {
     await otpModel.deleteOne({email})
   }
+
+  async updateOtp(email:string,otp:string,expiresAt:Date):Promise<void>{
+    console.log("update otp",email,otp,expiresAt)
+    const otpp = await otpModel.findOne({email})
+    console.log("otp",otpp)
+    await otpModel.findOneAndUpdate({email},{otp,expiresAt},{new:true})
+  }
 }

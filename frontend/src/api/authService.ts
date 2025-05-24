@@ -9,6 +9,7 @@ import {
   type RefreshRequest,
   type RefreshResponse,
   type LogoutResponse,
+  type ResendResponse,
 } from '../types';
 
 export const authService = {
@@ -46,4 +47,9 @@ export const authService = {
     const response = await axiosInstance.post<LogoutResponse>('/api/auth/logout');
     return response.data;
   },
+
+  resend: async (data:string):Promise<ResendResponse> => {
+    const response = await axiosInstance.post<ResendResponse>('/api/auth/resend',{data})
+    return response.data
+  }
 };

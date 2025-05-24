@@ -4,11 +4,12 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './redux/store';
 import { Navbar } from './components/common/Navbar';
 import { AppRoutes } from './routes/AppRoutes';
-
+import { Toaster } from 'react-hot-toast';
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<div className="min-h-screen flex items-center justify-center">Loading...</div>} persistor={persistor}>
+      <Toaster position='top-right'/>
         <div className="min-h-screen bg-gray-100">
           <Navbar />
           <AppRoutes />

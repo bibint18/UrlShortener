@@ -23,6 +23,18 @@ export class AuthController implements IAuthController{
     }
   }
 
+  async resendOtp(req:Request,res:Response,next:NextFunction): Promise<void>{
+    try {
+      const {data} = req.body
+      console.log("reached resend",req.body)
+      const email = data
+      await this.authService.resendOtp(email)
+      res.status(HttpStatus.CREATED).json({success:true,message:"otp sent successfully"})
+    } catch (error) {
+      next(error)
+    }
+  }
+
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const {email,otp,fullName,password} = req.body

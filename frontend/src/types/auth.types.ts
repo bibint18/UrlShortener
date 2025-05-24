@@ -47,7 +47,9 @@ export interface LoginResponse {
     user: User;
   };
 }
-
+export interface ResendRequest{
+  email:string
+}
 export interface RefreshRequest {
   refreshToken: string;
 }
@@ -62,4 +64,9 @@ export interface RefreshResponse {
 export interface LogoutResponse {
   success: boolean;
   message: string;
+}
+
+export interface ResendResponse{
+  success:boolean;
+  message:string
 }

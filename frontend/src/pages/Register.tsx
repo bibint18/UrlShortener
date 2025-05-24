@@ -143,6 +143,7 @@ import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { getErrorMessage } from '../utils/error.utils';
 import { VerifyOtp } from './VerifyOtp';
+import toast from 'react-hot-toast'
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -220,6 +221,7 @@ export const Register: React.FC = () => {
     try {
       await authService.register(formData);
       // navigate('/verify-otp', { state: { email: formData.email } });
+      toast.success("Otp Sent Succesfully")
       setIsEmailVerified(true)
     } catch (err) {
       setErrors({ ...errors, email: getErrorMessage(err) });

@@ -31,14 +31,33 @@ export class AuthService implements IAuthService{
     // })
     // console.log(user)
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    await this.otpRepository.createOtp({
+    const expiresAt= new Date(Date.now() + 10 * 60 * 1000)
+    const EmailExist = await this.otpRepository.findOtpByEmail(email)
+    if(EmailExist){
+      const updatedOtp = await this.otpRepository.updateOtp(email,otp,expiresAt)
+      console.log('updatedOtp',updatedOtp)
+    }else{
+       await this.otpRepository.createOtp({
       email,
       otp,
       expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     })
+    }
     console.log("otp",otp)
     const otpsend =await this.emailService.sendOtpEmail(email,otp)
     console.log("otpsend",otpsend)
+  }
+
+  async resendOtp(email:string):Promise<void>{
+    try {
+    console.log("reached resend",email)
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
+    await this.otpRepository.updateOtp(email,otp,expiresAt)
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
   async verifyOtp(fullName:string,email:string,password:string,otp:string): Promise<void> {

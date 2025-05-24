@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { authService } from '../api/authService';
 import { Form } from '../components/common/Form';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { getErrorMessage } from '../utils/error.utils';
+import toast from 'react-hot-toast';
 interface VerifyOtpProps {
   fullName: string;
   email: string;
@@ -18,7 +19,6 @@ export const VerifyOtp: React.FC<VerifyOtpProps> = ({fullName,email,password}) =
   const [timer, setTimer] = useState(60);
   const [resendDisabled, setResendDisabled] = useState(true);
   const navigate = useNavigate();
-  const { state } = useLocation();
 
   useEffect(() => {
     if (timer > 0) {
@@ -41,6 +41,7 @@ export const VerifyOtp: React.FC<VerifyOtpProps> = ({fullName,email,password}) =
     setError('');
     try {
       await authService.verifyOtp({fullName,email,password,otp });
+      toast.success("OTP Verified Succesfully!")
       navigate('/login');
     } catch (err) {
       setError(getErrorMessage(err));
@@ -48,6 +49,13 @@ export const VerifyOtp: React.FC<VerifyOtpProps> = ({fullName,email,password}) =
       setIsLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    await authService.resend(email)
+    setTimer(60);
+    setResendDisabled(true)
+    toast.success("New OTP sent Succesfully")
+  }
 
   
 
@@ -73,7 +81,7 @@ export const VerifyOtp: React.FC<VerifyOtpProps> = ({fullName,email,password}) =
         Resend OTP in {timer}s
       </p>
       <Button
-      
+        onClick={handleResend}
         disabled={resendDisabled || isLoading}
         className="mt-4 w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
       >
