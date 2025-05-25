@@ -161,23 +161,28 @@ export class AuthService implements IAuthService {
       }
 
       const { email, name, sub: googleId } = payload;
+      console.log("email from google auth",email)
       if (!email) {
         throw new ApiError(HttpStatus.BAD_REQUEST, "Email not provided by Google");
       }
 
       let user = await this.userRepository.findUserByEmail(email);
+      console.log('user auth google',user)
       if (user) {
         if (!user.isVerified) {
           throw new ApiError(HttpStatus.UNAUTHORIZED, "User account not verified");
         }
       } else {
+        console.log('auth no user google',email,googleId)
         user = await this.userRepository.createUser({
           fullName: name || "Google User",
           email,
           hashedPassword: "",
           isVerified: true,
           googleId,
+          refreshToken:'',
         });
+        console.log("user created",user)
       }
 
       if (!user) {
@@ -188,7 +193,8 @@ export class AuthService implements IAuthService {
       const refreshToken = generateRefreshToken(user);
       await this.userRepository.updateUser(user.id, { refreshToken });
       return { accessToken, refreshToken, user };
-    } catch{
+    } catch(error){
+      console.log("from google servuce",error)
       throw new ApiError(HttpStatus.UNAUTHORIZED, "Google login failed");
     }
   }
