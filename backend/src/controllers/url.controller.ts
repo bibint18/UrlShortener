@@ -32,8 +32,11 @@ export class UrlController implements IUrlController{
       if(!userId){
         throw new ApiError(HttpStatus.NOT_FOUND,"No user Found")
       }
-      const urls = await this.urlService.getUserUrls(new mongoose.Types.ObjectId(userId))
-      res.status(HttpStatus.OK).json({success:true,data:urls})
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 5;
+      const {urls,totalItems} = await this.urlService.getUserUrls(new mongoose.Types.ObjectId(userId),page,limit)
+      const totalPages = Math.ceil(totalItems/limit)
+      res.status(HttpStatus.OK).json({success:true,data:{urls,totalPages,currentPage:page,totalItems},})
     } catch (error) {
       next(error)
     }

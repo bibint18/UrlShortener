@@ -21,12 +21,13 @@ export class UrlService implements IurlService{
     })
   }
 
-  async getUserUrls(userId: Types.ObjectId): Promise<Iurl[] | null> {
-    const urls = await this.urlRepository.findUrlsByUserId(userId)
-    if(!urls){
+  async getUserUrls(userId: Types.ObjectId,page:number,limit:number): Promise<{ urls: Iurl[]; totalItems: number }> {
+    const urls = await this.urlRepository.findUrlsByUserId(userId,page,limit)
+    const totalItems = await this.urlRepository.countUrlsByUserId(userId)
+    if(!urls || urls.length ===0){
       throw new ApiError(HttpStatus.NOT_FOUND,"No URL found")
     }
-    return urls
+    return {urls,totalItems}
   }
 
   async redirectUrl(shortId: string): Promise<Iurl | null> {

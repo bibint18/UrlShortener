@@ -5,12 +5,17 @@ import { urlService } from '../api/urlService';
 import { URLCard } from '../components/common/URLCard';
 import {type Url } from '../types';
 import { getErrorMessage } from '../utils/error.utils';
+import { Pagination } from './Pagination';
+
 
 export const Dashboard: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [urls, setUrls] = useState<Url[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -18,8 +23,9 @@ export const Dashboard: React.FC = () => {
       setIsLoading(true);
       setError('');
       try {
-        const response = await urlService.getUserUrls();
-        setUrls(response.data);
+        const response = await urlService.getUserUrls(currentPage,itemsPerPage);
+        setUrls(response.data.urls);
+        setTotalPages(response.data.totalPages)
       } catch (err) {
         setError(getErrorMessage(err));
       } finally {
@@ -27,7 +33,11 @@ export const Dashboard: React.FC = () => {
       }
     };
     fetchUrls();
-  }, [user]);
+  }, [user,currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (!user) {
     return <p className="text-red-500">Please log in to view your dashboard.</p>;
@@ -47,6 +57,15 @@ export const Dashboard: React.FC = () => {
           <URLCard key={url.id} url={url} />
         ))}
       </div>
+
+        {urls.length > 0 && (
+          <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          />
+        )}
+
     </div>
   );
 };

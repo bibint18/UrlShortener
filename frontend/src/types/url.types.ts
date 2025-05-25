@@ -26,7 +26,12 @@ export interface ShortenUrlResponse {
 
 export interface GetUserUrlsResponse {
   success: boolean;
-  data: Url[];
+  data: {
+    urls:Url[];
+    totalPages:number;
+    currentPage:number;
+    totalItems:number
+  }
 }
 
 export interface RedirectUrlResponse {

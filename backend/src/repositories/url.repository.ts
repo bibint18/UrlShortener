@@ -12,8 +12,12 @@ export class UrlRepository implements IUrlRepository{
     return await urlModel.findOne({shortId:shortId})
   }
 
-  async findUrlsByUserId(userId: Types.ObjectId): Promise<Iurl[] | null> {
-    return await urlModel.find({userId})
+  async findUrlsByUserId(userId: Types.ObjectId,page:number,limit:number): Promise<Iurl[] | null> {
+    return await urlModel.find({userId}).skip((page-1) * limit).limit(limit).exec()
+  }
+
+  async countUrlsByUserId(userId: Types.ObjectId): Promise<number> {
+    return await urlModel.countDocuments({ userId }).exec();
   }
 
   async incrementClicks(shortId: string): Promise<Iurl | null> {
