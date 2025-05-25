@@ -4,6 +4,7 @@ import { Form } from '../components/common/Form';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { getErrorMessage } from '../utils/error.utils';
+import toast from 'react-hot-toast';
 
 export const ShortenUrl: React.FC = () => {
   const [originalUrl, setOriginalUrl] = useState('');
@@ -13,6 +14,9 @@ export const ShortenUrl: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!originalUrl){
+      toast.error("Url Can't be empty!")
+    }
     setIsLoading(true);
     setError('');
     try {
