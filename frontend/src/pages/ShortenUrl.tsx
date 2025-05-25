@@ -16,6 +16,7 @@ export const ShortenUrl: React.FC = () => {
     e.preventDefault();
     if(!originalUrl){
       toast.error("Url Can't be empty!")
+      return
     }
     setIsLoading(true);
     setError('');

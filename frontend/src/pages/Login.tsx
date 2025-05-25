@@ -11,17 +11,35 @@ import { store } from '../redux/store';
 
 export const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [errors,setErrors] = useState({email:'',password:''});
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+    const validateField = (name: string, value: string): string => {
+    if (!value.trim()) return `${name[0].toUpperCase() + name.slice(1)} is required`;
+    return '';
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {name,value} = e.target
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({...errors,[name]:validateField(name,value)})
+  };
+
+    const validateForm = (): boolean => {
+    const newErrors = {
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error !== '');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setIsLoading(true);
     setError('');
     try {
@@ -54,7 +72,7 @@ export const Login: React.FC = () => {
           value={formData.email}
           onChange={handleChange}
           placeholder="Email"
-          error={error.includes('email') ? 'Invalid email' : ''}
+          error={errors.email}
         />
         <Input
           type="password"
@@ -62,7 +80,7 @@ export const Login: React.FC = () => {
           value={formData.password}
           onChange={handleChange}
           placeholder="Password"
-          error={error.includes('password') ? 'Invalid password' : ''}
+          error={errors.password}
         />
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}

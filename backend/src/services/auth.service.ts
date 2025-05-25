@@ -110,7 +110,10 @@ export class AuthService implements IAuthService {
     user: Iuser | null;
   }> {
     const user = await this.userRepository.findUserByEmail(email);
-    if (!user || !user.isVerified) {
+    if(!user){
+      throw new ApiError(HttpStatus.NOT_FOUND,"User Not Found")
+    }
+    if (!user.isVerified) {
       throw new ApiError(
         HttpStatus.UNAUTHORIZED,
         "Invalid credentials or Unverified account"
