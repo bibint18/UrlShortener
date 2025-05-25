@@ -7,7 +7,8 @@ const UserSchema = new Schema<Iuser>({
   hashedPassword:{type:String,required:true},
   isVerified:{type:Boolean,default:false},
   refreshToken:{type:String},
-  createdAt:{type:Date,default:Date.now()}
+  createdAt:{type:Date,default:Date.now()},
+  googleId: { type: String, unique: true, sparse: true },
 })
 
 export default model<Iuser>('User',UserSchema)

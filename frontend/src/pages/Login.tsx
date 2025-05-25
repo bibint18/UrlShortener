@@ -8,6 +8,7 @@ import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { getErrorMessage } from '../utils/error.utils';
 import { store } from '../redux/store';
+import GoogleLoginButton from '../components/Google/GoogleLoginButton';
 
 export const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -86,6 +87,7 @@ export const Login: React.FC = () => {
           {isLoading ? 'Logging in...' : 'Login'}
         </Button>
       </Form>
+      <GoogleLoginButton />
     </div>
   );
 };

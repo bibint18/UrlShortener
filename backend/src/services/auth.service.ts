@@ -11,13 +11,17 @@ import {
   verifyRefreshToken,
 } from "../utils/jwt.utils.js";
 import { Iuser } from "../interfaces/models/user.interface.js";
+import { OAuth2Client } from "google-auth-library";
 
 export class AuthService implements IAuthService {
+  private googleClient: OAuth2Client;
   constructor(
     private userRepository: UserRepository,
     private otpRepository: OtpRepository,
     private emailService: EmailService
-  ) {}
+  ) {
+    this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
 
   async register(
     fullName: string,
@@ -29,14 +33,6 @@ export class AuthService implements IAuthService {
       throw new ApiError(HttpStatus.BAD_REQUEST, "Email Already Exist");
     }
     console.log(password);
-    // const hashedPassword = await bcrypt.hash(password,10)
-    // const user = await this.userRepository.createUser({
-    //   fullName,
-    //   email,
-    //   hashedPassword,
-    //   isVerified:false
-    // })
-    // console.log(user)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
     const EmailExist = await this.otpRepository.findOtpByEmail(email);
@@ -146,6 +142,54 @@ export class AuthService implements IAuthService {
       return generateAccessToken(user);
     } catch {
       throw new ApiError(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+    }
+  }
+
+  async googleLogin(idToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Iuser | null;
+  }> {
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      if (!payload) {
+        throw new ApiError(HttpStatus.UNAUTHORIZED, "Invalid Google token");
+      }
+
+      const { email, name, sub: googleId } = payload;
+      if (!email) {
+        throw new ApiError(HttpStatus.BAD_REQUEST, "Email not provided by Google");
+      }
+
+      let user = await this.userRepository.findUserByEmail(email);
+      if (user) {
+        if (!user.isVerified) {
+          throw new ApiError(HttpStatus.UNAUTHORIZED, "User account not verified");
+        }
+      } else {
+        user = await this.userRepository.createUser({
+          fullName: name || "Google User",
+          email,
+          hashedPassword: "",
+          isVerified: true,
+          googleId,
+        });
+      }
+
+      if (!user) {
+        throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "User creation failed");
+      }
+
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+      await this.userRepository.updateUser(user.id, { refreshToken });
+      return { accessToken, refreshToken, user };
+    } catch{
+      throw new ApiError(HttpStatus.UNAUTHORIZED, "Google login failed");
     }
   }
 }

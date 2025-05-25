@@ -7,4 +7,5 @@ export interface Iuser extends Document{
   isVerified:boolean
   refreshToken?:string
   createdAt:Date
+  googleId?:string
 }

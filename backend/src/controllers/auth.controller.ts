@@ -100,4 +100,21 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
+
+  async googleLogin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { idToken } = req.body;
+      const { accessToken, refreshToken, user } =
+        await this.authService.googleLogin(idToken);
+      res
+        .status(HttpStatus.OK)
+        .json({ success: true, data: { accessToken, refreshToken, user } });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

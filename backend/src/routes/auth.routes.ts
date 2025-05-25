@@ -11,5 +11,5 @@ router.post('/login',RateLimiter,authController.login.bind(authController))
 router.post('/refresh',RateLimiter,authController.refresh.bind(authController))
 router.post("/logout",authController.logout.bind(authController))
 router.post('/resend',RateLimiter,authController.resendOtp.bind(authController))
-
+router.post('/google-login',authController.googleLogin.bind(authController))
 export default router
