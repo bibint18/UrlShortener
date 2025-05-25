@@ -11,7 +11,7 @@ export const ShortenUrl: React.FC = () => {
   const [shortenedUrl, setShortenedUrl] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const [shortId,setShortId] = useState('')
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if(!originalUrl){
@@ -23,6 +23,7 @@ export const ShortenUrl: React.FC = () => {
     try {
       const response = await urlService.shortenUrl({ originalUrl });
       setShortenedUrl(`${window.location.origin}/${response.data.shortId}`);
+      setShortId(response.data.shortId)
       setOriginalUrl('');
     } catch (err) {
       setError(getErrorMessage(err));
@@ -31,6 +32,23 @@ export const ShortenUrl: React.FC = () => {
     }
   };
 
+  const handleRedirect = async () => {
+      try {
+        // console.log('URLCard.handleRedirect: Clicking shortId:', shortId);
+        const response = await urlService.redirectUrl(shortId);
+        if (response.success && response.data.originalUrl) {
+          console.log('URLCard.handleRedirect: Redirecting to:', response.data.originalUrl);
+          window.location.href = response.data.originalUrl;
+        } else {
+          console.error('URLCard.handleRedirect: Invalid response:', response);
+          alert('Failed to redirect: Invalid URL');
+        }
+      } catch (error) {
+        console.error('URLCard.handleRedirect: Error:', error);
+        alert('Failed to redirect: Server error');
+      }
+    };
+
   return (
     <div className="container mx-auto p-4 max-w-md">
       <h1 className="text-2xl font-bold mb-4">Shorten URL</h1>
@@ -38,14 +56,22 @@ export const ShortenUrl: React.FC = () => {
       {shortenedUrl && (
         <p className="mb-4">
           Shortened URL:{' '}
-          <a
+          {/* <a
             href={shortenedUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
           >
             {shortenedUrl}
-          </a>
+          </a> */}
+
+                  <span
+          onClick={handleRedirect}
+          className="text-blue-600 hover:underline cursor-pointer"
+        >
+          {shortId}
+        </span>
+
         </p>
       )}
       <Form onSubmit={handleSubmit}>

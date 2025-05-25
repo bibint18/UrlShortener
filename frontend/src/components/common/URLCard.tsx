@@ -2,6 +2,7 @@ import React from 'react';
 import {type Url } from '../../types';
 import { Button } from '../common/Button'
 import { urlService } from '../../api/urlService';
+import toast from 'react-hot-toast';
 
 interface URLCardProps {
   url: Url;
@@ -10,7 +11,7 @@ interface URLCardProps {
 export const URLCard: React.FC<URLCardProps> = ({ url }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`${window.location.origin}/${url.shortId}`);
-    alert('Short URL copied to clipboard!');
+    toast.success('Short URL copied to clipboard!');
   };
 
   const handleRedirect = async () => {
