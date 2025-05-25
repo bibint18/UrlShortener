@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
-import { Iurl } from "../interfaces/models/url.interface";
-import { IurlService } from "../interfaces/services/url.service.interface";
-import { UrlRepository } from "../repositories/url.repository";
-import { generateShortId } from "../utils/shortId.utils";
-import { ApiError } from "../utils/error.utils";
-import { HttpStatus } from "../types/http-status.enum";
+import { Iurl } from "../interfaces/models/url.interface.js";
+import { IurlService } from "../interfaces/services/url.service.interface.js";
+import { UrlRepository } from "../repositories/url.repository.js";
+import { generateShortId } from "../utils/shortId.utils.js";
+import { ApiError } from "../utils/error.utils.js";
+import { HttpStatus } from "../types/http-status.enum.js";
 
 export class UrlService implements IurlService{
   constructor(private urlRepository:UrlRepository){}

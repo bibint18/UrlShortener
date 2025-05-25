@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Iuser } from "../interfaces/models/user.interface";
+import { Iuser } from "../interfaces/models/user.interface.js";
 import dotenv from 'dotenv'
 dotenv.config()
 export const generateAccessToken = (user:Iuser):string => {

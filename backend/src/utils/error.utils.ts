@@ -1,5 +1,5 @@
 
-import { HttpStatus } from "../types/http-status.enum";
+import { HttpStatus } from "../types/http-status.enum.js";
 
 export class ApiError extends Error{
   constructor(public status:HttpStatus,message:string){

@@ -1,6 +1,6 @@
-import { IuserRepository } from "../interfaces/repositories/user.repository.interface";
-import { Iuser } from "../interfaces/models/user.interface";
-import userModel from "../models/user.model";
+import { IuserRepository } from "../interfaces/repositories/user.repository.interface.js";
+import { Iuser } from "../interfaces/models/user.interface.js";
+import userModel from "../models/user.model.js";
 
 export class UserRepository implements IuserRepository{
   async createUser(user: Partial<Iuser>): Promise<Iuser> {

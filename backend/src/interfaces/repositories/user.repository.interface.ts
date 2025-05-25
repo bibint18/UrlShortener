@@ -1,4 +1,4 @@
-import { Iuser } from "../models/user.interface";
+import { Iuser } from "../models/user.interface.js";
 export interface IuserRepository{
   createUser(user:Partial<Iuser>):Promise<Iuser>
   findUserByEmail(email:string):Promise<Iuser | null>

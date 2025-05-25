@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { Iurl } from "../models/url.interface";
+import { Iurl } from "../models/url.interface.js";
 
 export interface IurlService{
   shortenUrl(userId:Types.ObjectId,originalUrl:string):Promise<Iurl>

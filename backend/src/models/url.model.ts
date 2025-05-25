@@ -1,5 +1,5 @@
 import { Schema,model } from "mongoose";
-import { Iurl } from "../interfaces/models/url.interface";
+import { Iurl } from "../interfaces/models/url.interface.js";
 
 const urlSchema = new Schema<Iurl>({
   userId:{type:Schema.Types.ObjectId,ref:"User",required:true},

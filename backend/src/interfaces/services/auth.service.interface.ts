@@ -1,4 +1,4 @@
-import { Iuser } from "../models/user.interface";
+import { Iuser } from "../models/user.interface.js";
 
 export interface IAuthService{
   register(fullName:string,email:string,password:string):Promise<void>

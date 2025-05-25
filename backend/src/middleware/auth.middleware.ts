@@ -1,7 +1,7 @@
 import { Request,Response,NextFunction } from "express";
-import { ApiError } from "../utils/error.utils";
-import { HttpStatus } from "../types/http-status.enum";
-import { verifyAccessToken } from "../utils/jwt.utils";
+import { ApiError } from "../utils/error.utils.js";
+import { HttpStatus } from "../types/http-status.enum.js";
+import { verifyAccessToken } from "../utils/jwt.utils.js";
 import { JwtPayload } from "jsonwebtoken";
 declare module 'express-serve-static-core' {
   interface Request {

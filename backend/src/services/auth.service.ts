@@ -1,27 +1,34 @@
-import bcrypt from 'bcrypt'
-import { UserRepository } from "../repositories/user.repository";
-import { EmailService } from "./email.service";
-import { OtpRepository } from "../repositories/otp.repository";
-import { IAuthService } from "../interfaces/services/auth.service.interface";
-import { ApiError } from "../utils/error.utils";
-import { HttpStatus } from "../types/http-status.enum";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.utils';
-import { Iuser } from '../interfaces/models/user.interface';
+import bcrypt from "bcrypt";
+import { UserRepository } from "../repositories/user.repository.js";
+import { EmailService } from "./email.service.js";
+import { OtpRepository } from "../repositories/otp.repository.js";
+import { IAuthService } from "../interfaces/services/auth.service.interface.js";
+import { ApiError } from "../utils/error.utils.js";
+import { HttpStatus } from "../types/http-status.enum.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt.utils.js";
+import { Iuser } from "../interfaces/models/user.interface.js";
 
-
-export class AuthService implements IAuthService{
+export class AuthService implements IAuthService {
   constructor(
-    private userRepository:UserRepository,
-    private otpRepository:OtpRepository,
-    private emailService:EmailService
-  ){}
+    private userRepository: UserRepository,
+    private otpRepository: OtpRepository,
+    private emailService: EmailService
+  ) {}
 
-  async register(fullName: string, email: string, password: string): Promise<void> {
-    const existingUser = await this.userRepository.findUserByEmail(email)
-    if(existingUser){
-      throw new ApiError(HttpStatus.BAD_REQUEST,"Email Already Exist")
+  async register(
+    fullName: string,
+    email: string,
+    password: string
+  ): Promise<void> {
+    const existingUser = await this.userRepository.findUserByEmail(email);
+    if (existingUser) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, "Email Already Exist");
     }
-    console.log(password)
+    console.log(password);
     // const hashedPassword = await bcrypt.hash(password,10)
     // const user = await this.userRepository.createUser({
     //   fullName,
@@ -30,88 +37,112 @@ export class AuthService implements IAuthService{
     //   isVerified:false
     // })
     // console.log(user)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    const expiresAt= new Date(Date.now() + 10 * 60 * 1000)
-    const EmailExist = await this.otpRepository.findOtpByEmail(email)
-    if(EmailExist){
-      const updatedOtp = await this.otpRepository.updateOtp(email,otp,expiresAt)
-      console.log('updatedOtp',updatedOtp)
-    }else{
-       await this.otpRepository.createOtp({
-      email,
-      otp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000)
-    })
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const EmailExist = await this.otpRepository.findOtpByEmail(email);
+    if (EmailExist) {
+      const updatedOtp = await this.otpRepository.updateOtp(
+        email,
+        otp,
+        expiresAt
+      );
+      console.log("updatedOtp", updatedOtp);
+    } else {
+      await this.otpRepository.createOtp({
+        email,
+        otp,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      });
     }
-    console.log("otp",otp)
-    const otpsend =await this.emailService.sendOtpEmail(email,otp)
-    console.log("otpsend",otpsend)
+    console.log("otp", otp);
+    const otpsend = await this.emailService.sendOtpEmail(email, otp);
+    console.log("otpsend", otpsend);
   }
 
-  async resendOtp(email:string):Promise<void>{
+  async resendOtp(email: string): Promise<void> {
     try {
-    console.log("reached resend",email)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
-    await this.otpRepository.updateOtp(email,otp,expiresAt)
+      console.log("reached resend", email);
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      await this.otpRepository.updateOtp(email, otp, expiresAt);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   }
 
-  async verifyOtp(fullName:string,email:string,password:string,otp:string): Promise<void> {
-    console.log('verifyotp backend',fullName,email,password,otp)
-    const otpRecord = await this.otpRepository.findOtpByEmail(email)
-    console.log('otprecord',otpRecord)
-    if(!otpRecord || otpRecord.otp !== otp || otpRecord.expiresAt < new Date()){
-      throw new ApiError(HttpStatus.BAD_REQUEST,"Invalid or Expired Otp")
+  async verifyOtp(
+    fullName: string,
+    email: string,
+    password: string,
+    otp: string
+  ): Promise<void> {
+    console.log("verifyotp backend", fullName, email, password, otp);
+    const otpRecord = await this.otpRepository.findOtpByEmail(email);
+    console.log("otprecord", otpRecord);
+    if (
+      !otpRecord ||
+      otpRecord.otp !== otp ||
+      otpRecord.expiresAt < new Date()
+    ) {
+      throw new ApiError(HttpStatus.BAD_REQUEST, "Invalid or Expired Otp");
     }
     // const user = await this.userRepository.findUserByEmail(email)
     // if(!user){
     //   throw new ApiError(HttpStatus.NOT_FOUND,"No user exist")
     // }
-    const hashedPassword = await bcrypt.hash(password,10)
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.userRepository.createUser({
       fullName,
       email,
       hashedPassword,
-      isVerified:false
-    })
-    await this.userRepository.updateUser(user.id,{isVerified:true})
-    await this.otpRepository.deleteOtpByEmail(email)
+      isVerified: false,
+    });
+    await this.userRepository.updateUser(user.id, { isVerified: true });
+    await this.otpRepository.deleteOtpByEmail(email);
   }
 
-  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user:Iuser | null }> {
-    const user = await this.userRepository.findUserByEmail(email)
-    if(!user || !user.isVerified){
-      throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid credentials or Unverified account")
+  async login(
+    email: string,
+    password: string
+  ): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: Iuser | null;
+  }> {
+    const user = await this.userRepository.findUserByEmail(email);
+    if (!user || !user.isVerified) {
+      throw new ApiError(
+        HttpStatus.UNAUTHORIZED,
+        "Invalid credentials or Unverified account"
+      );
     }
-    const isPassword = await bcrypt.compare(password,user.hashedPassword)
-    if(!isPassword){
-      throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid credentials")
+    const isPassword = await bcrypt.compare(password, user.hashedPassword);
+    if (!isPassword) {
+      throw new ApiError(HttpStatus.UNAUTHORIZED, "Invalid credentials");
     }
-    const accessToken = generateAccessToken(user)
-    const refreshToken = generateRefreshToken(user)
-    const userData = await this.userRepository.findUserByEmail(email)
-    console.log("acc refr tokens from service",accessToken,refreshToken)
-    await this.userRepository.updateUser(user.id,{refreshToken:refreshToken})
-    return {accessToken,refreshToken,user:userData}
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    const userData = await this.userRepository.findUserByEmail(email);
+    console.log("acc refr tokens from service", accessToken, refreshToken);
+    await this.userRepository.updateUser(user.id, {
+      refreshToken: refreshToken,
+    });
+    return { accessToken, refreshToken, user: userData };
   }
 
   async resfreshToken(reffreshToken: string): Promise<string> {
-    try{
-    const payload = verifyRefreshToken(reffreshToken) as {id:string}
-    console.log('payload from refresh service',payload)
-    // const user = await this.userRepository.findUserByEmail(payload.id)
-    const user = await this.userRepository.findUserById(payload.id)
-    console.log("user from refresh",user)
-    if(!user || user.refreshToken !== reffreshToken){
-      throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid Refresh Token")
-    }
-    return generateAccessToken(user)
-    }catch{
-      throw new ApiError(HttpStatus.UNAUTHORIZED,"Invalid refresh token")
+    try {
+      const payload = verifyRefreshToken(reffreshToken) as { id: string };
+      console.log("payload from refresh service", payload);
+      // const user = await this.userRepository.findUserByEmail(payload.id)
+      const user = await this.userRepository.findUserById(payload.id);
+      console.log("user from refresh", user);
+      if (!user || user.refreshToken !== reffreshToken) {
+        throw new ApiError(HttpStatus.UNAUTHORIZED, "Invalid Refresh Token");
+      }
+      return generateAccessToken(user);
+    } catch {
+      throw new ApiError(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
     }
   }
 }

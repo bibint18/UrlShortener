@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { IUrlController } from "../interfaces/controllers/url.controller.interface";
-import { UrlRepository } from "../repositories/url.repository";
-import { UrlService } from "../services/url.service";
-import { ApiError } from "../utils/error.utils";
-import { HttpStatus } from "../types/http-status.enum";
+import { IUrlController } from "../interfaces/controllers/url.controller.interface.js";
+import { UrlRepository } from "../repositories/url.repository.js";
+import { UrlService } from "../services/url.service.js";
+import { ApiError } from "../utils/error.utils.js";
+import { HttpStatus } from "../types/http-status.enum.js";
 import mongoose from "mongoose";
 
 export class UrlController implements IUrlController{

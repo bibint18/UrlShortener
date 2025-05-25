@@ -1,6 +1,6 @@
-import { IUrlRepository } from "../interfaces/repositories/url.repository.interface";
-import { Iurl } from "../interfaces/models/url.interface";
-import urlModel from "../models/url.model";
+import { IUrlRepository } from "../interfaces/repositories/url.repository.interface.js";
+import { Iurl } from "../interfaces/models/url.interface.js";
+import urlModel from "../models/url.model.js";
 import { Types } from "mongoose";
 
 export class UrlRepository implements IUrlRepository{
