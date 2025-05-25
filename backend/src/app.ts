@@ -4,8 +4,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { connectDB } from "./config/database.js";
-import authRoute from '../src/routes/auth.routes.js'
-import urlRoute from '../src/routes/url.routes.js'
+import authRoute from './routes/auth.routes.js'
+import urlRoute from './routes/url.routes.js'
 import { UrlController } from "./controllers/url.controller.js";
 import { ApiError } from "./utils/error.utils.js";
 import { HttpStatus } from "./types/http-status.enum.js";
@@ -26,7 +26,7 @@ app.get('/:shortId',urlController.redirectUrl.bind(urlController))
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err instanceof ApiError) {
     res.status(err.status).json({ success: false, message: err.message, error: err });
-    next()
+    console.log(next)
   } else {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
   }
