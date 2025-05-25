@@ -11,6 +11,11 @@ export class UrlService implements IurlService{
 
   async shortenUrl(userId: Types.ObjectId, originalUrl: string): Promise<Iurl> {
     console.log("shorteb service",userId,originalUrl)
+    const existed = await this.urlRepository.findUrlByOriginal(originalUrl)
+    console.log("existed",existed)
+    if(existed){
+      throw new ApiError(HttpStatus.BAD_REQUEST,"Url Already existed")
+    }
     const shortId =generateShortId()
     console.log("shortId",shortId)
     return await this.urlRepository.createUrl({
@@ -21,9 +26,9 @@ export class UrlService implements IurlService{
     })
   }
 
-  async getUserUrls(userId: Types.ObjectId,page:number,limit:number): Promise<{ urls: Iurl[]; totalItems: number }> {
-    const urls = await this.urlRepository.findUrlsByUserId(userId,page,limit)
-    const totalItems = await this.urlRepository.countUrlsByUserId(userId)
+  async getUserUrls(userId: Types.ObjectId,page:number,limit:number,search: string = ''): Promise<{ urls: Iurl[]; totalItems: number }> {
+    const urls = await this.urlRepository.findUrlsByUserId(userId,page,limit,search)
+    const totalItems = await this.urlRepository.countUrlsByUserId(userId,search)
     if(!urls || urls.length ===0){
       throw new ApiError(HttpStatus.NOT_FOUND,"No URL found")
     }

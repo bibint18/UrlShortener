@@ -16,9 +16,9 @@ export const urlService = {
     return response.data;
   },
 
-  getUserUrls: async (page:number,limit:number): Promise<GetUserUrlsResponse> => {
+  getUserUrls: async (page:number,limit:number,search:string=''): Promise<GetUserUrlsResponse> => {
     const response =
-      await axiosInstance.get<GetUserUrlsResponse>('/api/urls/',{params:{page,limit}});
+      await axiosInstance.get<GetUserUrlsResponse>('/api/urls/',{params:{page,limit,search}});
       console.log('user urls',response.data)
     return response.data;
   },

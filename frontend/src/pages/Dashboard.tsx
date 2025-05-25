@@ -6,6 +6,7 @@ import { URLCard } from '../components/common/URLCard';
 import {type Url } from '../types';
 import { getErrorMessage } from '../utils/error.utils';
 import { Pagination } from './Pagination';
+import { SearchBar } from '../components/common/SearchBar';
 
 
 export const Dashboard: React.FC = () => {
@@ -15,7 +16,8 @@ export const Dashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 5;
+  const [seacrhQuery,setSearchQuery] = useState('')
+  const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -23,7 +25,7 @@ export const Dashboard: React.FC = () => {
       setIsLoading(true);
       setError('');
       try {
-        const response = await urlService.getUserUrls(currentPage,itemsPerPage);
+        const response = await urlService.getUserUrls(currentPage,itemsPerPage,seacrhQuery);
         setUrls(response.data.urls);
         setTotalPages(response.data.totalPages)
       } catch (err) {
@@ -33,10 +35,15 @@ export const Dashboard: React.FC = () => {
       }
     };
     fetchUrls();
-  }, [user,currentPage]);
+  }, [user,currentPage,seacrhQuery]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page on new search
   };
 
   if (!user) {
@@ -49,6 +56,7 @@ export const Dashboard: React.FC = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Welcome, {user.fullName}</h1>
       <h2 className="text-xl font-semibold mb-4">Your Shortened URLs</h2>
+      <SearchBar onSearch={handleSearch} />
       {isLoading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {urls.length === 0 && !isLoading && <p>No URLs created yet.</p>}

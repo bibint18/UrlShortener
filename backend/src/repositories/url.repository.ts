@@ -12,12 +12,30 @@ export class UrlRepository implements IUrlRepository{
     return await urlModel.findOne({shortId:shortId})
   }
 
-  async findUrlsByUserId(userId: Types.ObjectId,page:number,limit:number): Promise<Iurl[] | null> {
-    return await urlModel.find({userId}).skip((page-1) * limit).limit(limit).exec()
+  async findUrlsByUserId(userId: Types.ObjectId,page:number,limit:number,search:string=''): Promise<Iurl[] | null> {
+    const query: any = { userId };
+    if (search) {
+      query.$or = [
+        { originalUrl: { $regex: search, $options: 'i' } },
+        { shortId: { $regex: search, $options: 'i' } },
+      ];
+    }
+    return await urlModel.find(query).skip((page-1) * limit).limit(limit).exec()
   }
 
-  async countUrlsByUserId(userId: Types.ObjectId): Promise<number> {
-    return await urlModel.countDocuments({ userId }).exec();
+  async countUrlsByUserId(userId: Types.ObjectId,search:string=''): Promise<number> {
+    const query:any ={userId}
+    if(search){
+      query.$or = [
+        { originalUrl: { $regex: search, $options: 'i' } },
+        { shortId: { $regex: search, $options: 'i' } },
+      ];
+    }
+    return await urlModel.countDocuments(query).exec();
+  }
+
+  async findUrlByOriginal(originalUrl:string):Promise<Iurl | null>{
+    return await urlModel.findOne({originalUrl})
   }
 
   async incrementClicks(shortId: string): Promise<Iurl | null> {
