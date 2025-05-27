@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authService } from '../api/authService';
 import { setCredentials } from '../redux/slices/authSlice';
 import { Form } from '../components/common/Form';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { getErrorMessage } from '../utils/error.utils';
-import { store } from '../redux/store';
+import { store, type RootState } from '../redux/store';
 import GoogleLoginButton from '../components/Google/GoogleLoginButton';
 
 export const Login: React.FC = () => {
@@ -17,6 +17,13 @@ export const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const {user} = useSelector((state:RootState)=> state.auth)
+
+  useEffect(() => {
+    if(user){
+      navigate('/dashboard')
+    }
+  },[user,navigate])
 
     const validateField = (name: string, value: string): string => {
     if (!value.trim()) return `${name[0].toUpperCase() + name.slice(1)} is required`;
